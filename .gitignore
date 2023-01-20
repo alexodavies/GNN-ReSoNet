@@ -30,6 +30,7 @@ privacy/
 raw_datasets/*
 social_to_adjacency/*
 
+exp.zip
 
 .installed.cfg
 *.egg

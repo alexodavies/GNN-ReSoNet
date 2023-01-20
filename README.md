@@ -1,9 +1,9 @@
 
-GitHub repository for
+## GitHub repository for
 # GNNs for Realistic Synthetic Social Networks
 
 
-Originally the official PyTorch implementation of [Efficient Graph Generation with Graph Recurrent Attention Networks](https://arxiv.org/abs/1910.00760) as described in the following NeurIPS 2019 paper:
+Originally forked from the official PyTorch implementation of [Efficient Graph Generation with Graph Recurrent Attention Networks](https://arxiv.org/abs/1910.00760) as described in the following NeurIPS 2019 paper:
 The GRAN NeurIPS paper can be found at:
 ```
 @inproceedings{liao2019gran,
@@ -24,7 +24,7 @@ Other dependencies can be installed via
 
 ## Run Demos
 
-Processed data is already in this repository, under ```data/```, and the original datasets are available at ```https://snap.stanford.edu/data/```
+Processed data is already in this repository, under ```data/```, and the original datasets are available at ```https://snap.stanford.edu/data/```.
 
 ### Train
 * To run the training of experiment ```X``` where ```X``` is one of {```deezer_ego```, ```fb_large```, ```git```, ```twitch```}:
@@ -47,10 +47,18 @@ Processed data is already in this repository, under ```data/```, and the origina
 
   ```python run_exp.py -c config/X.yaml -t```
 
+### Generate
+
+* Similarly after training you can specify a trained model and generate networks using the ```-g``` flag, ie:
+* ```python run_exp.py -c config/X.yaml -g```
+* This includes optional benchmarking against R-MAT
+
 ### Trained Models
 * You could use our trained model for comparisons. Please make sure you are using the same split of the dataset. Running the following script will download the trained model:
 
-	```./download_model.sh```	
+* ```bash download.sh```	
+
+* This will create an ```exp/``` directory containing experimental results for the four datasets. 
 
 ## Sampled Graphs from GRAN
 
@@ -60,17 +68,14 @@ Processed data is already in this repository, under ```data/```, and the origina
 
 ### Comparisons of R-MAT and GRAN
 
-![](https://github.com/neutralpronoun/GNN-ReSoNet/blob/main/Figures/generated_visualisations_Facebook%20Page-Page.pdf)
+[Facebook](https://github.com/neutralpronoun/GNN-ReSoNet/blob/main/Figures/generated_visualisations_Facebook%20Page-Page.pdf)
 
-![](https://github.com/neutralpronoun/GNN-ReSoNet/blob/main/Figures/generated_visualisations_poster_Deezer%20Ego.pdf)
+[Deezer Ego](https://github.com/neutralpronoun/GNN-ReSoNet/blob/main/Figures/generated_visualisations_poster_Deezer%20Ego.pdf)
 
-[//]: # (![]&#40;http://www.cs.toronto.edu/~rjliao/imgs/protein_train.png&#41;)
-
-
-[//]: # (![]&#40;http://www.cs.toronto.edu/~rjliao/imgs/protein_sample.png&#41;)
+[Issues with multiple connected components](https://github.com/neutralpronoun/GNN-ReSoNet/blob/main/Figures/unconnected_components_presentation.pdf)
 
 ## Cite
 Please cite our paper if you use this code in your research work.
 
 ## Questions/Bugs
-Please submit a Github issue or contact rjliao@cs.toronto.edu if you have any questions or find any bugs.
+Please submit a Github issue or contact alexander.davies@bristol.ac.uk if you have any questions or find any bugs.
