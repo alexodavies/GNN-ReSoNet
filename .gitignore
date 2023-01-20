@@ -29,7 +29,7 @@ GRAN_flask/
 gui/
 privacy/
 raw_datasets/*
-social_to_adjacency/*
+social_to_adjacency/*.jpg
 
 
 .installed.cfg
