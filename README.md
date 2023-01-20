@@ -54,7 +54,7 @@ Processed data is already in this repository, under ```data/```, and the origina
 * This includes optional benchmarking against R-MAT
 
 ### Trained Models
-* You could use our trained model for comparisons. Please make sure you are using the same split of the dataset. Running the following script will download the trained model:
+* You could use our trained model for comparisons. Running the following script will download the trained model:
 
 * ```bash download.sh```	
 
