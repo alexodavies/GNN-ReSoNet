@@ -54,7 +54,15 @@ Processed data is already in this repository, under ```data/```, and the origina
 
 ## Sampled Graphs from GRAN
 
+### Real and synthetic networks from GRAN
+
 ![](https://github.com/neutralpronoun/GNN-ReSoNet/blob/main/Figures/generated_visualisations_1.png)
+
+### Comparisons of R-MAT and GRAN
+
+![](https://github.com/neutralpronoun/GNN-ReSoNet/blob/main/Figures/generated_visualisations_Facebook%20Page-Page.pdf)
+
+![](https://github.com/neutralpronoun/GNN-ReSoNet/blob/main/Figures/generated_visualisations_poster_Deezer%20Ego.pdf)
 
 [//]: # (![]&#40;http://www.cs.toronto.edu/~rjliao/imgs/protein_train.png&#41;)
 
