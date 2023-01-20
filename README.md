@@ -54,6 +54,8 @@ Processed data is already in this repository, under ```data/```, and the origina
 
 ## Sampled Graphs from GRAN
 
+![](https://github.com/neutralpronoun/GNN-ReSoNet/blob/main/Figures/generated_visualisations_1.png)
+
 [//]: # (![]&#40;http://www.cs.toronto.edu/~rjliao/imgs/protein_train.png&#41;)
 
 
