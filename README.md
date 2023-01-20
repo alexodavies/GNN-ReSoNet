@@ -24,6 +24,8 @@ Other dependencies can be installed via
 
 ## Run Demos
 
+Processed data is already in this repository, under ```data/```, and the original datasets are available at ```https://snap.stanford.edu/data/```
+
 ### Train
 * To run the training of experiment ```X``` where ```X``` is one of {```deezer_ego```, ```fb_large```, ```git```, ```twitch```}:
 

@@ -24,7 +24,6 @@ wheels/
 
 #data/*
 exp/*
-Figures/
 GRAN_flask/
 gui/
 privacy/
