@@ -1,8 +1,10 @@
 
-# GRAN - Alex Davies
+GitHub repository for
+# GNNs for Realistic Synthetic Social Networks
 
-This is (a fork of) the official PyTorch implementation of [Efficient Graph Generation with Graph Recurrent Attention Networks](https://arxiv.org/abs/1910.00760) as described in the following NeurIPS 2019 paper:
 
+Originally the official PyTorch implementation of [Efficient Graph Generation with Graph Recurrent Attention Networks](https://arxiv.org/abs/1910.00760) as described in the following NeurIPS 2019 paper:
+The GRAN NeurIPS paper can be found at:
 ```
 @inproceedings{liao2019gran,
   title={Efficient Graph Generation with Graph Recurrent Attention Networks}, 
@@ -11,16 +13,6 @@ This is (a fork of) the official PyTorch implementation of [Efficient Graph Gene
   year={2019}
 }
 ```
-
-## Visualization
-
-### Generation of GRAN per step:
-![](http://www.cs.toronto.edu/~rjliao/imgs/gran_model.gif)
-
-
-### Overall generation process:
-<img src="http://www.cs.toronto.edu/~rjliao/imgs/gran_generation.gif" height="400px" width="550px" />
-
 
 ## Dependencies
 Python 3, PyTorch(1.2.0)
@@ -33,7 +25,7 @@ Other dependencies can be installed via
 ## Run Demos
 
 ### Train
-* To run the training of experiment ```X``` where ```X``` is one of {```gran_grid```, ```gran_DD```, ```gran_DB```, ```gran_lobster```}:
+* To run the training of experiment ```X``` where ```X``` is one of {```deezer_ego```, ```fb_large```, ```git```, ```twitch```}:
 
   ```python run_exp.py -c config/X.yaml```
   
@@ -53,10 +45,6 @@ Other dependencies can be installed via
 
   ```python run_exp.py -c config/X.yaml -t```
 
-**Note**:
-
-* Please check the [evaluation](https://github.com/JiaxuanYou/graph-generation) to set up.
-
 ### Trained Models
 * You could use our trained model for comparisons. Please make sure you are using the same split of the dataset. Running the following script will download the trained model:
 
@@ -64,11 +52,10 @@ Other dependencies can be installed via
 
 ## Sampled Graphs from GRAN
 
-* Proteins Graphs from Training Set:
-![](http://www.cs.toronto.edu/~rjliao/imgs/protein_train.png)
+[//]: # (![]&#40;http://www.cs.toronto.edu/~rjliao/imgs/protein_train.png&#41;)
 
-* Proteins Graphs Sampled from GRAN:
-![](http://www.cs.toronto.edu/~rjliao/imgs/protein_sample.png)
+
+[//]: # (![]&#40;http://www.cs.toronto.edu/~rjliao/imgs/protein_sample.png&#41;)
 
 ## Cite
 Please cite our paper if you use this code in your research work.

@@ -22,7 +22,7 @@ var/
 wheels/
 *.egg-info/
 
-data/*
+#data/*
 exp/*
 Figures/
 GRAN_flask/
