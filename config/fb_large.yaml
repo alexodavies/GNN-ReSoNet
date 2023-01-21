@@ -10,7 +10,7 @@ seed: 4454
 dataset:
   loader_name: GRANData
   name: FB_LARGE
-  data_path: /home/alex/Projects/GRAN_social/data
+  data_path: # ../data
   node_order: DFS # k_core/BFS/degree_decent
   train_ratio: 0.8
   dev_ratio: 0.2
@@ -51,7 +51,7 @@ train:
   shuffle: true
   is_resume: true
   resume_epoch: 30000
-  resume_dir: /home/alex/Projects/GRAN_social/exp/GRAN/FB_LARGE
+  resume_dir: # ../exp/GRAN/X
   resume_model: model_snapshot_0030000.pth
 test:
   batch_size: 1
@@ -63,7 +63,7 @@ test:
   num_vis: 12
   vis_num_row: 4 # visualize `num_vis` samples in `vis_num_row` rows
   better_vis: true
-  test_model_dir: /home/alex/Projects/GRAN_social/exp/GRAN/FB_LARGE
+  test_model_dir: # ../exp/GRAN/X
   test_model_name: model_snapshot_0030000.pth
 generate:
   batch_size: 10
@@ -76,5 +76,5 @@ generate:
   num_vis: 12
   vis_num_row: 3 # visualize `num_vis` samples in `vis_num_row` rows
   better_vis: true
-  test_model_dir: /home/alex/Projects/GRAN_social/exp/GRAN/FB_LARGE
+  test_model_dir: # ../exp/GRAN/X
   test_model_name: model_snapshot_0030000.pth

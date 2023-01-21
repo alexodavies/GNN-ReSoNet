@@ -9,6 +9,12 @@ from math import log2
 __all__ = ['learn_and_generate', 'save_graph_edgelist']
 
 def learn_and_generate(G):
+    """
+    Fits an R-MAT model to a given graph G and generates a networkx graph using that model
+
+    args:
+    G: A networkx undirected graph
+    """
 
     nodes = sorted(list(G.nodes()))
     N = len(list(G.nodes()))

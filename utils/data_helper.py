@@ -1,7 +1,11 @@
 ###############################################################################
 #
+# lrjconan:
 # Some code is adapted from https://github.com/JiaxuanYou/graph-generation
 #
+# anon:
+# Re-factored some of this code to be less strict with inputs,
+# Some parameters are now calculated based on input data
 ###############################################################################
 import os
 import torch
@@ -26,21 +30,11 @@ def save_graph_list(G_list, fname):
 
 
 def pick_connected_component_new(G):
-  # import pdb; pdb.set_trace()
-
-  # adj_list = G.adjacency_list()
-  # for id,adj in enumerate(adj_list):
-  #     id_min = min(adj)
-  #     if id<id_min and id>=1:
-  #     # if id<id_min and id>=4:
-  #         break
-  # node_list = list(range(id)) # only include node prior than node "id"
 
   adj_dict = nx.to_dict_of_lists(G)
   for node_id in sorted(adj_dict.keys()):
     id_min = min(adj_dict[node_id])
     if node_id < id_min and node_id >= 1:
-      # if node_id<id_min and node_id>=4:
       break
   node_list = list(
       range(node_id))  # only include node prior than node "node_id"
@@ -83,9 +77,7 @@ def preprocess_graph_list(graph_list):
 
 
 def graph_load_batch(data_dir,
-                     # min_num_nodes=20,
-                     # max_num_nodes=1000,
-                     name='ENZYMES',
+                     name='DEEZER_EGO', # Default
                      node_attributes=True,
                      graph_labels=True):
   '''
@@ -117,8 +109,6 @@ def graph_load_batch(data_dir,
         delimiter=',').astype(int)
 
   data_tuple = list(map(tuple, data_adj))
-  # print(len(data_tuple))
-  # print(data_tuple[0])
 
   # add edges
   G.add_edges_from(data_tuple)
@@ -132,9 +122,6 @@ def graph_load_batch(data_dir,
   # remove self-loop
   G.remove_edges_from(nx.selfloop_edges(G))
 
-  # print(G.number_of_nodes())
-  # print(G.number_of_edges())
-
   # split into graphs
   graph_num = data_graph_indicator.max()
   node_list = np.arange(data_graph_indicator.shape[0]) + 1
@@ -142,63 +129,22 @@ def graph_load_batch(data_dir,
   max_nodes = 0
   min_nodes = int(1e6)
   for i in range(graph_num):
-    # find the nodes for each graph
+    # find the nodes for each graph, as well as minimum and maximum node numbers overall
     nodes = node_list[data_graph_indicator == i + 1]
     G_sub = G.subgraph(nodes)
     if graph_labels:
       G_sub.graph['label'] = data_graph_labels[i]
-    # print('nodes', G_sub.number_of_nodes())
-    # print('edges', G_sub.number_of_edges())
-    # print('label', G_sub.graph)
-    # if G_sub.number_of_nodes() >= min_num_nodes and G_sub.number_of_nodes(
-    # ) <= max_num_nodes:
     graphs.append(G_sub)
     if G_sub.number_of_nodes() > max_nodes:
       max_nodes = G_sub.number_of_nodes()
     elif G_sub.number_of_nodes() < min_nodes:
       min_nodes = G_sub.number_of_nodes()
-      # print(G_sub.number_of_nodes(), 'i', i)
-      # print('Graph dataset name: {}, total graph num: {}'.format(name, len(graphs)))
-      # logging.warning('Graphs loaded, total num: {}'.format(len(graphs)))
   print('Loaded')
-  return graphs    #, max_nodes, min_nodes
+  return graphs
 
 
 def create_graphs(graph_type, data_dir='data', noise=10.0, seed=1234):
-  npr = np.random.RandomState(seed)
-  ### load datasets
-  graphs = []
-  # synthetic graphs
-  # if graph_type == 'grid':
-  #   graphs = []
-  #   for i in range(10, 20):
-  #     for j in range(10, 20):
-  #       graphs.append(nx.grid_2d_graph(i, j))
-  # elif graph_type == 'lobster':
-  #   graphs = []
-  #   p1 = 0.7
-  #   p2 = 0.7
-  #   count = 0
-  #   min_node = 10
-  #   max_node = 100
-  #   max_edge = 0
-  #   mean_node = 80
-  #   num_graphs = 100
-  #
-  #   seed_tmp = seed
-  #   while count < num_graphs:
-  #     G = nx.random_lobster(mean_node, p1, p2, seed=seed_tmp)
-  #     if len(G.nodes()) >= min_node and len(G.nodes()) <= max_node:
-  #       graphs.append(G)
-  #       if G.number_of_edges() > max_edge:
-  #         max_edge = G.number_of_edges()
-  #
-  #       count += 1
-  #
-  #     seed_tmp += 1
-  #
-  # # config = get_config(f"{graph_type.lower()}.yaml")
-
+  # anon: This function is a lot smaller than in lrjconan's GRAN as we don't generate any graph datasets (eg planar or SBM)
   graphs = graph_load_batch(
       data_dir,
       name = graph_type,
@@ -212,104 +158,3 @@ def create_graphs(graph_type, data_dir='data', noise=10.0, seed=1234):
   print('max # edges = {} || mean # edges = {}'.format(max(num_edges), np.mean(num_edges)))
 
   return graphs
-
-
-  # elif graph_type == 'DD':
-  #   graphs = graph_load_batch(
-  #       data_dir,
-  #       min_num_nodes=100,
-  #       max_num_nodes=500,
-  #       name='DD',
-  #       node_attributes=False,
-  #       graph_labels=True)
-  #   # args.max_prev_node = 230
-  #
-  # elif graph_type == "social":
-  #   graphs = graph_load_batch(
-  #       data_dir,
-  #       min_num_nodes=799,
-  #       max_num_nodes=801,
-  #       name='social',
-  #       node_attributes=False,
-  #       graph_labels=True)
-  #   # args.max_prev_node = 230
-  #   # print(graphs)
-  #   print(graphs[0])
-  #
-  #
-  # elif graph_type == "FACEBOOK":
-  #   graphs = graph_load_batch(
-  #       data_dir,
-  #       min_num_nodes=199,
-  #       max_num_nodes=201,
-  #       name='FACEBOOK',
-  #       node_attributes=False,
-  #       graph_labels=True)
-  #   # args.max_prev_node = 230
-  #   # print(graphs)
-  #   print(graphs[0])
-  #
-  # elif graph_type == "FACEBOOK_LARGE":
-  #   print(data_dir)
-  #   graphs = graph_load_batch(
-  #       data_dir,
-  #       min_num_nodes=19,
-  #       max_num_nodes=2001,
-  #       name='FACEBOOK_LARGE',
-  #       node_attributes=False,
-  #       graph_labels=True)
-  #   # args.max_prev_node = 230
-  #   # print(graphs)
-  #   print(graphs[0])
-  #
-  # elif graph_type == "GIT":
-  #   print(data_dir)
-  #   graphs = graph_load_batch(
-  #       data_dir,
-  #       # min_num_nodes=19,
-  #       # max_num_nodes=2001,
-  #       name='GIT',
-  #       node_attributes=False,
-  #       graph_labels=True)
-  #   # args.max_prev_node = 230
-  #   # print(graphs)
-  #   print(graphs[0])
-  #
-  # elif graph_type == "DEEZER_EGO":
-  #   print(data_dir)
-  #   graphs = graph_load_batch(
-  #       data_dir,
-  #       # min_num_nodes=10,
-  #       # max_num_nodes=364,
-  #       name='DEEZER_EGO',
-  #       node_attributes=False,
-  #       graph_labels=True)
-  #   # args.max_prev_node = 230
-  #   # print(graphs)
-  #   print(graphs[0])
-  #
-  #
-  # elif graph_type == "TWITCH":
-  #   print(data_dir)
-  #   graphs = graph_load_batch(
-  #       data_dir,
-  #       min_num_nodes=399,
-  #       max_num_nodes=401,
-  #       name='TWITCH',
-  #       node_attributes=True,
-  #       graph_labels=True)
-  #   # args.max_prev_node = 230
-  #   # print(graphs)
-  #   print(graphs[0])
-  #
-  #
-  # elif graph_type == 'FIRSTMM_DB':
-  #   graphs = graph_load_batch(
-  #       data_dir,
-  #       min_num_nodes=0,
-  #       max_num_nodes=10000,
-  #       name='FIRSTMM_DB',
-  #       node_attributes=False,
-  #       graph_labels=True)
-
-

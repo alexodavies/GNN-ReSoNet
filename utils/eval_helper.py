@@ -96,32 +96,6 @@ def community_stats(graph_ref_list, graph_pred_list, is_parallel=True):
     with concurrent.futures.ThreadPoolExecutor() as executor:
       for n_coms in executor.map(community_worker, graph_pred_list_remove_empty):
         sample_pred.append(n_coms)
-  #
-  #   # with concurrent.futures.ProcessPoolExecutor() as executor:
-  #   #   for deg_hist in executor.map(degree_worker, graph_ref_list):
-  #   #     sample_ref.append(deg_hist)
-  #   # with concurrent.futures.ProcessPoolExecutor() as executor:
-  #   #   for deg_hist in executor.map(degree_worker, graph_pred_list_remove_empty):
-  #   #     sample_pred.append(deg_hist)
-  # else:
-  #   for i in range(len(graph_ref_list)):
-  #     degree_temp = np.array(nx.degree_histogram(graph_ref_list[i]))
-  #     sample_ref.append(degree_temp)
-  #   for i in range(len(graph_pred_list_remove_empty)):
-  #     degree_temp = np.array(
-  #       nx.degree_histogram(graph_pred_list_remove_empty[i]))
-  #     sample_pred.append(degree_temp)
-  # # print(len(sample_ref), len(sample_pred))
-  #
-  # # mmd_dist = compute_mmd(sample_ref, sample_pred, kernel=gaussian_emd)
-  # # mmd_dist = compute_mmd(sample_ref, sample_pred, kernel=emd)
-  # # print(f"degree: {sample_ref}")
-  # mmd_dist = compute_mmd(sample_ref, sample_pred, kernel=gaussian_tv)
-  # # mmd_dist = compute_mmd(sample_ref, sample_pred, kernel=gaussian_emd)
-  #
-  # elapsed = datetime.now() - prev
-  # if PRINT_TIME:
-  #   print('Time computing degree mmd: ', elapsed)
 
   mmd_dist = compute_mmd([np.bincount(np.array(sample_ref).flatten())], [np.bincount(np.array(sample_pred).flatten())],
                                        kernel=gaussian)
@@ -151,13 +125,6 @@ def degree_stats(graph_ref_list, graph_pred_list, is_parallel=True):
     with concurrent.futures.ThreadPoolExecutor() as executor:
       for deg_hist in executor.map(degree_worker, graph_pred_list_remove_empty):
         sample_pred.append(deg_hist)
-
-    # with concurrent.futures.ProcessPoolExecutor() as executor:
-    #   for deg_hist in executor.map(degree_worker, graph_ref_list):
-    #     sample_ref.append(deg_hist)
-    # with concurrent.futures.ProcessPoolExecutor() as executor:
-    #   for deg_hist in executor.map(degree_worker, graph_pred_list_remove_empty):
-    #     sample_pred.append(deg_hist)
   else:
     for i in range(len(graph_ref_list)):
       degree_temp = np.array(nx.degree_histogram(graph_ref_list[i]))
@@ -166,13 +133,7 @@ def degree_stats(graph_ref_list, graph_pred_list, is_parallel=True):
       degree_temp = np.array(
           nx.degree_histogram(graph_pred_list_remove_empty[i]))
       sample_pred.append(degree_temp)
-  # print(len(sample_ref), len(sample_pred))
-
-  # mmd_dist = compute_mmd(sample_ref, sample_pred, kernel=gaussian_emd)
-  # mmd_dist = compute_mmd(sample_ref, sample_pred, kernel=emd)
-  # print(f"degree: {sample_ref}")
   mmd_dist = compute_mmd(sample_ref, sample_pred, kernel=gaussian)
-  # mmd_dist = compute_mmd(sample_ref, sample_pred, kernel=gaussian_emd)
 
   elapsed = datetime.now() - prev
   if PRINT_TIME:
@@ -180,7 +141,7 @@ def degree_stats(graph_ref_list, graph_pred_list, is_parallel=True):
   return mmd_dist
 
 #%%
-def SIR_ENDPOINT(G,Nb_inf_init,Gamma,HM, T):
+def SIR_simulation(G,Nb_inf_init,Gamma,HM, T):
     """ function that runs a simulation of an SIR model on a network.
     Args:
         Gamma(float): recovery rate
@@ -255,13 +216,13 @@ def mean_duration(G, N_runs, T = 100, HM = 0.04, Gamma = 5, Nb_inf_init = 2):
     failed = 0
     for i in range(N_runs):
         try:
-          duration, saturation = SIR_ENDPOINT(G, Nb_inf_init, Gamma, HM, T)
+          duration, saturation = SIR_simulation(G, Nb_inf_init, Gamma, HM, T)
           durations[i] = duration
           saturations[i] = saturation
         except:
           failed += 1
           pass
-    # print(f"failed {100*failed/N_runs}% of diffusion runs")
+    print(f"failed {100*failed/N_runs}% of diffusion runs")
     return (durations.tolist(), saturations.tolist())
 
 def duration_worker(G):
@@ -276,6 +237,7 @@ def duration_worker(G):
 def diffusion_stats(graph_ref_list, graph_pred_list,
                     is_parallel=True, PRINT_TIME = True):
   ''' Compute the distance between the degree distributions of two unordered sets of graphs.
+    Here for SIR simulations, computes MMD across saturation and duration.
     Args:
       graph_ref_list, graph_target_list: two lists of networkx graphs to be evaluated
     '''
@@ -299,13 +261,6 @@ def diffusion_stats(graph_ref_list, graph_pred_list,
       for rad in executor.map(duration_worker, graph_pred_list_remove_empty):
         sample_pred_durs.append(rad[0])
         sample_pred_sats.append(rad[1])
-
-    # with concurrent.futures.ProcessPoolExecutor() as executor:
-    #   for deg_hist in executor.map(degree_worker, graph_ref_list):
-    #     sample_ref.append(deg_hist)
-    # with concurrent.futures.ProcessPoolExecutor() as executor:
-    #   for deg_hist in executor.map(degree_worker, graph_pred_list_remove_empty):
-    #     sample_pred.append(deg_hist)
   else:
     for i in range(len(graph_ref_list)):
       degree_temp = np.array(nx.degree_histogram(graph_ref_list[i]))
@@ -314,22 +269,12 @@ def diffusion_stats(graph_ref_list, graph_pred_list,
       degree_temp = np.array(
         nx.degree_histogram(graph_pred_list_remove_empty[i]))
       sample_pred.append(degree_temp)
-  # print(len(sample_ref), len(sample_pred))
-
-  # mmd_dist = compute_mmd(sample_ref, sample_pred, kernel=gaussian_emd)
-  # mmd_dist = compute_mmd(sample_ref, sample_pred, kernel=emd)
-  # print(f"diffusion: {sample_ref}")
   mmd_dist_durs = compute_mmd(sample_ref_durs, sample_pred_durs, kernel=gaussian)
   mmd_dist_sats = compute_mmd(sample_ref_sats, sample_pred_sats, kernel=gaussian)
-  # mmd_dist = compute_mmd(sample_ref, sample_pred, kernel=gaussian_emd)
-
-  # mmd_dist = np.mean(sample_ref) / np.mean(sample_pred)
 
   elapsed = datetime.now() - prev
   if PRINT_TIME:
     print('\nTime computing diffusion endpoints: ', elapsed)
-  #   print(f'Mean diffusion steps sample: {np.mean(sample_ref)}')
-  #   print(f'Mean diffusion steps gen   : {np.mean(sample_pred)}\n')
   return mmd_dist_durs, mmd_dist_sats
 
 def get_paths(G):
@@ -343,13 +288,10 @@ def get_paths(G):
   return all_paths
 
 def radius_worker(G):
-  # print(nx.is_connected(G))
   G = get_largest_component(G)
-  # print(nx.is_connected(G))
-  # print("\n")
   if nx.is_connected(G):
     path_hist, _ = np.histogram(get_paths(G), bins = 200)
-    return path_hist#nx.average_shortest_path_length(G)
+    return path_hist
 
 def get_largest_component(G):
   nodes = list([c for c in sorted(nx.connected_components(G), key=len, reverse=True)][0])
@@ -375,13 +317,6 @@ def radius_stats(graph_ref_list, graph_pred_list, is_parallel=True, PRINT_TIME =
     with concurrent.futures.ThreadPoolExecutor() as executor:
       for rad in executor.map(radius_worker, graph_pred_list_remove_empty):
         sample_pred.append(rad)
-
-    # with concurrent.futures.ProcessPoolExecutor() as executor:
-    #   for deg_hist in executor.map(degree_worker, graph_ref_list):
-    #     sample_ref.append(deg_hist)
-    # with concurrent.futures.ProcessPoolExecutor() as executor:
-    #   for deg_hist in executor.map(degree_worker, graph_pred_list_remove_empty):
-    #     sample_pred.append(deg_hist)
   else:
     for i in range(len(graph_ref_list)):
       degree_temp = np.array(nx.degree_histogram(graph_ref_list[i]))
@@ -390,29 +325,18 @@ def radius_stats(graph_ref_list, graph_pred_list, is_parallel=True, PRINT_TIME =
       degree_temp = np.array(
         nx.degree_histogram(graph_pred_list_remove_empty[i]))
       sample_pred.append(degree_temp)
-  # print(len(sample_ref), len(sample_pred))
-
-  # mmd_dist = compute_mmd(sample_ref, sample_pred, kernel=gaussian_emd)
-  # mmd_dist = compute_mmd(sample_ref, sample_pred, kernel=emd)
   mmd_dist = compute_mmd(sample_ref, sample_pred, kernel=gaussian_tv)
-  # mmd_dist = compute_mmd(sample_ref, sample_pred, kernel=gaussian_emd)
-
-  # mmd_dist = np.mean(sample_ref) / np.mean(sample_pred)
 
   elapsed = datetime.now() - prev
   if PRINT_TIME:
     print('\nTime computing radii: ', elapsed)
-    # print(f'Mean radius sample: {np.mean(sample_ref)}')
-    # print(f'Mean radius gen   : {np.mean(sample_pred)}\n')
   return mmd_dist
 
 def omega_worker(G):
-  # print(nx.is_connected(G))
   G = get_largest_component(G)
   return nx.omega(G, niter=10, nrand=2)
 
 def sigma_worker(G):
-  # print(nx.is_connected(G))
   G = get_largest_component(G)
   return nx.sigma(G, niter=10, nrand=2)
 

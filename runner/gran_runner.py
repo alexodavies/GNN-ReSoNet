@@ -76,35 +76,14 @@ def evaluate(graph_gt, graph_pred, degree_only=True):
     mmd_clustering = 0.0
     mmd_spectral = 0.0
   else:
-    mmd_radius = radius_stats(graph_gt, graph_pred)
-    mmd_4orbits = orbit_stats_all(graph_gt, graph_pred)
-    mmd_clustering = clustering_stats(graph_gt, graph_pred)    
-    mmd_spectral = spectral_stats(graph_gt, graph_pred)
-    mmd_diffusion_durs, mmd_diffusion_sats = diffusion_stats(graph_gt, graph_pred)
+    mmd_radius = radius_stats(graph_gt, graph_pred) # Calculate MMD for shortest path lengths
+    mmd_4orbits = orbit_stats_all(graph_gt, graph_pred) # Currently non-functional and unused
+    mmd_clustering = clustering_stats(graph_gt, graph_pred) # MMD for clustering
+    mmd_spectral = spectral_stats(graph_gt, graph_pred) # MMD for spectral eigenvalues
+    mmd_diffusion_durs, mmd_diffusion_sats = diffusion_stats(graph_gt, graph_pred) # MMD for SIR simulation results
 
     
   return mmd_degree, mmd_clustering, mmd_4orbits, mmd_spectral, mmd_radius, mmd_diffusion_durs, mmd_diffusion_sats
-
-
-#    Not currently used
-# def evaluate_means(graph_gt, graph_pred, degree_only=True):
-#     """"""
-#     mean_degree = degree_mean(graph_gt, graph_pred)
-#
-#     if degree_only:
-#         mean_4orbits = 0.0
-#         mean_clustering = 0.0
-#         mean_spectral = 0.0
-#     else:
-#         mean_radius = radius_mean(graph_gt, graph_pred)
-#         mean_4orbits = orbit_mean_all(graph_gt, graph_pred)
-#         mean_clustering = clustering_mean(graph_gt, graph_pred)
-#         mean_spectral = spectral_mean(graph_gt, graph_pred)
-#         # mean_omega = omega_mean(graph_gt, graph_pred)
-#         # sample_sigma, pre_sigma = sigma_mean(graph_gt, graph_pred)
-#         mean_diffusion = diffusion_mean(graph_gt, graph_pred)
-#
-#     return mean_degree, mean_clustering, mean_4orbits, mean_spectral, mean_radius, mean_diffusion  # , sample_sigma, pre_sigma
 
 
 class GranRunner(object):
@@ -135,7 +114,7 @@ class GranRunner(object):
     if self.train_conf.is_resume:
       self.config.save_dir = self.train_conf.resume_dir
 
-    ### load graphs
+    ### load graphs (utils/datahelper)
     self.graphs = create_graphs(config.dataset.name, data_dir=config.dataset.data_path)
 
     self.train_ratio = config.dataset.train_ratio
@@ -201,8 +180,8 @@ class GranRunner(object):
 
 
     #   Added catches for alternative devices, including MPS for Apple Silicon
-    #   Node: MPS currently doesn't support more complex operations with attention
-    #         layers so this is not functional, config should use device: cpu on apple silicon
+    #   Note: MPS currently doesn't support more complex operations with attention
+    #   layers so this is not functional, config should use device: cpu on apple silicon
     if self.device == "mps":
       self.device = torch.device("mps")
       model = model.to(self.device)
@@ -271,7 +250,7 @@ class GranRunner(object):
           
           if self.use_gpu:
             for dd, gpu_id in enumerate(self.gpus):
-                #   neuralpronoun: Simplified, avoding pin_memory calls, for compatibility
+                #   anon: Simplified, avoding pin_memory calls, for compatibility
                 #                  on more architectures
               data = {}
               data['adj'] = batch_data[dd][ff]['adj'].to(self.device)
@@ -330,7 +309,7 @@ class GranRunner(object):
       load_model(model, model_file, self.device)
 
 
-      # neutralpronoun:  catches for M1 architectures - NOT FUNCTIONAL, use CUDA or CPU
+      # anon:  catches for M1 architectures - NOT FUNCTIONAL, use CUDA or CPU
       if self.device == "mps":
         self.device = torch.device("mps")
         model = model.to(self.device)
@@ -461,7 +440,7 @@ class GranRunner(object):
 
 
   def generate(self):
-    """Neutralpronoun:
+    """anon:
     Method to generate samples from a trained GRAN model.
     Takes parameters from generate section of config files.
     Evaluation is optional, and evaluation code is based on .test above.
@@ -597,11 +576,6 @@ class GranRunner(object):
 
       n_gen = len(graphs_gen)
 
-      # for g in graphs_gen:
-      #   print("\n","="*50)
-      #   print(learn_and_generate(g))
-      #   print("\n","="*50)
-
       # Compared with Validation Set
       num_nodes_dev = [len(gg.nodes) for gg in self.graphs_dev]  # shape B X 1
       mmd_degree_dev, mmd_clustering_dev, mmd_4orbits_dev, mmd_spectral_dev, mmd_radius_dev, mmd_diffusion_dev_durs, mmd_diffusion_dev_sats = evaluate(
@@ -647,7 +621,6 @@ class GranRunner(object):
                                               mmd_spectral_test, mmd_diffusion_test_durs, mmd_diffusion_test_sats,
                                               mmd_radius_test, mmd_num_coms_test))
 
-      # return mmd_degree_dev, mmd_clustering_dev, mmd_4orbits_dev, mmd_spectral_dev, mmd_degree_test, mmd_clustering_test, mmd_4orbits_test, mmd_spectral_test
 
     if self.config.generate.is_eval_rmat:
 
@@ -702,4 +675,4 @@ class GranRunner(object):
                                               mmd_spectral_test, mmd_diffusion_test_durs, mmd_diffusion_test_sats,
                                               mmd_radius_test, mmd_num_coms_test))
 
-      return mmd_degree_dev, mmd_clustering_dev, mmd_4orbits_dev, mmd_spectral_dev, mmd_degree_test, mmd_clustering_test, mmd_4orbits_test, mmd_spectral_test
+    return mmd_degree_dev, mmd_clustering_dev, mmd_4orbits_dev, mmd_spectral_dev, mmd_degree_test, mmd_clustering_test, mmd_4orbits_test, mmd_spectral_test
